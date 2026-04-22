@@ -40,7 +40,7 @@ const Experience = () => {
     const getCrossPosition = (index, total) => {
         if (total === 1) return 'center';
         if (total === 2) {
-            return index === 0 ? 'top' : 'bottom';
+            return index === 0 ? 'left' : 'right';
         }
         // For 3+ items, create cross pattern
         if (index === 0) return 'center'; // Center item
@@ -93,7 +93,7 @@ const Experience = () => {
                         }}
                     >
                         {/* Cross Pattern Grid */}
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 md:gap-8 items-center justify-items-center">
+                        <div className={`grid grid-cols-1 ${experiences.length === 1 ? 'max-w-2xl mx-auto' : experiences.length === 2 ? 'md:grid-cols-2 max-w-5xl mx-auto' : 'md:grid-cols-3'} gap-4 sm:gap-6 md:gap-8 items-stretch justify-items-center`}>
                             {experiences.map((exp, index) => {
                                 const position = getCrossPosition(index, experiences.length);
                                 const isCenter = position === 'center';
@@ -102,8 +102,8 @@ const Experience = () => {
                                 const isTop = position === 'top';
                                 const isBottom = position === 'bottom';
 
-                                // Cinematic aspect ratio (widescreen)
-                                const aspectRatio = isCenter ? 'aspect-[21/9]' : 'aspect-[16/9]';
+                                // We remove fixed aspect ratios to prevent text overflow and allow elements to stack naturally
+                                const heightClass = 'h-full';
                                 
                                 // 3D transforms for cinematic depth
                                 const getTransform = () => {
@@ -121,11 +121,11 @@ const Experience = () => {
                                     <motion.div
                                         key={index}
                                         variants={itemAnimation}
-                                        className={`relative group ${isCenter ? 'md:col-span-3 md:row-span-1' : 'md:col-span-1'} w-full`}
+                                        className={`relative group ${isCenter ? (experiences.length === 1 ? 'md:col-span-1' : 'md:col-span-3 md:row-span-1') : 'md:col-span-1'} w-full h-full`}
                                         style={{
                                             transformStyle: 'preserve-3d',
-                                            gridColumn: isCenter ? '1 / -1' : 'auto',
-                                            gridRow: isTop ? '1' : isBottom ? '3' : '2',
+                                            gridColumn: isCenter ? (experiences.length === 1 ? 'auto' : '1 / -1') : 'auto',
+                                            gridRow: experiences.length > 2 ? (isTop ? '1' : isBottom ? '3' : '2') : 'auto',
                                             willChange: 'transform',
                                             backfaceVisibility: 'hidden',
                                             WebkitBackfaceVisibility: 'hidden'
@@ -140,7 +140,7 @@ const Experience = () => {
                                     >
                                         {/* Cinematic Box Container */}
                                         <div
-                                            className="relative w-full"
+                                            className="relative w-full h-full"
                                             style={{
                                                 transform: shouldReduceMotion 
                                                     ? 'none' 
@@ -154,7 +154,7 @@ const Experience = () => {
                                             {/* Main Cinematic Frame */}
                                             <div
                                                 className={`
-                                                    ${aspectRatio}
+                                                    ${heightClass}
                                                     bg-gradient-to-br from-white/5 via-white/3 to-white/5
                                                     border border-white/10
                                                     p-4 sm:p-5 md:p-6 lg:p-8
