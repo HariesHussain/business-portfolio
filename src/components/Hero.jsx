@@ -1,134 +1,159 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { HiCode, HiArrowRight } from 'react-icons/hi';
+import { motion, AnimatePresence } from 'framer-motion';
+import { HiArrowRight, HiDownload } from 'react-icons/hi';
+import { FaLinkedinIn, FaGithub } from 'react-icons/fa';
 import { config } from '../config.jsx';
-import BlackHole from './BlackHole';
+import { generateResumePDF } from '../utils/resumeGenerator.js';
+
+const roles = [
+    'Web Developer',
+    'AIML Student',
+    'Open Source Contributor',
+];
 
 const Hero = () => {
     const navigate = useNavigate();
     const location = useLocation();
+    const [roleIndex, setRoleIndex] = useState(0);
 
-    const containerAnimation = {
-        hidden: { opacity: 0 },
-        show: {
-            opacity: 1,
-            transition: {
-                staggerChildren: 0.15,
-                delayChildren: 0.2
-            }
-        }
-    };
-
-    const itemAnimation = {
-        hidden: { opacity: 0, y: 30 },
-        show: {
-            opacity: 1,
-            y: 0,
-            transition: {
-                duration: 0.6,
-                ease: [0.23, 1, 0.32, 1]
-            }
-        }
-    };
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setRoleIndex((prev) => (prev + 1) % roles.length);
+        }, 3000);
+        return () => clearInterval(interval);
+    }, []);
 
     const scrollToProjects = () => {
-        // If on home page, scroll to projects section
         if (location.pathname === '/') {
-            const element = document.querySelector('#projects');
-            if (element) {
-                element.scrollIntoView({ behavior: 'smooth' });
-            }
+            const el = document.querySelector('#projects');
+            if (el) el.scrollIntoView({ behavior: 'smooth' });
         } else {
-            // Navigate to projects page
             navigate('/projects');
         }
     };
 
     return (
-        <section id="home" className="min-h-screen flex flex-col md:flex-row items-center justify-center relative overflow-hidden pb-12 md:pb-20">
-            {/* Animated background gradient */}
-            <div className="absolute inset-0 -z-10">
-                <div className="absolute top-1/4 left-1/4 w-64 h-64 sm:w-96 sm:h-96 bg-blue-500/20 rounded-full blur-3xl animate-pulse" />
-                <div className="absolute bottom-1/4 right-1/4 w-64 h-64 sm:w-96 sm:h-96 bg-purple-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
-            </div>
+        <section id="home" className="flex items-center relative overflow-hidden bg-white pt-20 pb-6 md:min-h-screen md:pt-20 md:pb-12">
+            <div className="absolute inset-0 -z-10 bg-gradient-to-br from-indigo-50/50 via-white to-purple-50/50" />
 
-            {/* Grid pattern overlay */}
-            <div className="absolute inset-0 -z-10 opacity-20">
-                <div className="absolute inset-0" style={{
-                    backgroundImage: 'linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)',
-                    backgroundSize: '50px 50px'
-                }} />
-            </div>
-
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full flex flex-col items-center justify-center">
-                <motion.div
-                    variants={containerAnimation}
-                    initial="hidden"
-                    animate="show"
-                    className="max-w-4xl mx-auto w-full text-left space-y-6 sm:space-y-8 flex flex-col mb-8 sm:mb-12 md:mb-16"
-                >
+            <div className="w-full px-4 sm:px-6 lg:px-12 max-w-[1400px] mx-auto relative z-10">
+                <div className="grid lg:grid-cols-2 gap-6 lg:gap-12 items-center">
+                    
+                    {/* Left Content */}
                     <motion.div
-                        variants={itemAnimation}
-                        className="inline-flex items-center space-x-2 bg-white/5 border border-white/10 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full backdrop-blur-sm text-xs sm:text-sm w-fit"
+                        initial={{ opacity: 0, x: -30 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.6 }}
+                        className="w-full text-left"
                     >
-                        <HiCode className="w-3 h-3 sm:w-4 sm:h-4 text-white/80 flex-shrink-0" />
-                        <span className="font-medium text-white/80 whitespace-nowrap">Welcome to my portfolio</span>
+                        {/* Status Badge */}
+                        <div className="flex justify-start mb-3">
+                            <div className="inline-flex items-center space-x-2 bg-emerald-50 border border-emerald-100 px-3 py-1.5 rounded-full text-xs sm:text-sm">
+                                <div className="relative">
+                                    <div className="w-2 h-2 bg-emerald-500 rounded-full" />
+                                    <div className="absolute inset-0 w-2 h-2 bg-emerald-500 rounded-full animate-ping opacity-75" />
+                                </div>
+                                <span className="font-medium text-emerald-700">Open to Internship & Job Opportunities</span>
+                            </div>
+                        </div>
+
+                        {/* Mobile: Floating image that text wraps around */}
+                        <motion.img
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ duration: 0.6, delay: 0.2 }}
+                            src="/hero-profile.png"
+                            alt="Haries Hussain"
+                            className="lg:hidden float-right ml-4 mb-2 w-32 sm:w-40 rounded-2xl border-2 border-indigo-100 shadow-lg"
+                        />
+
+                        {/* Main Heading */}
+                        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[4.5rem] font-bold tracking-tight leading-[1.1] display-font text-gray-900">
+                            <span className="block mb-1">
+                                Hi, I'm <span className="text-indigo-600">{config.developer.name}</span>
+                            </span>
+                            <span className="block h-[1.2em] text-xl sm:text-2xl md:text-3xl lg:text-4xl overflow-hidden text-gray-500 font-medium mt-1">
+                                <AnimatePresence mode="wait">
+                                    <motion.span
+                                        key={roleIndex}
+                                        initial={{ y: 20, opacity: 0 }}
+                                        animate={{ y: 0, opacity: 1 }}
+                                        exit={{ y: -20, opacity: 0 }}
+                                        transition={{ duration: 0.3 }}
+                                        className="block"
+                                    >
+                                        {roles[roleIndex]}
+                                    </motion.span>
+                                </AnimatePresence>
+                            </span>
+                        </h1>
+
+                        {/* Description */}
+                        <p className="mt-3 text-sm sm:text-base lg:text-lg text-gray-600 leading-relaxed max-w-2xl font-light">
+                            {config.aboutMe}
+                        </p>
+
+                        {/* Clear the float before buttons */}
+                        <div className="clear-both" />
+
+                        {/* CTA Buttons */}
+                        <div className="flex flex-wrap justify-start gap-3 mt-4">
+                            <button
+                                onClick={scrollToProjects}
+                                className="group inline-flex items-center gap-2 px-5 py-3 sm:px-7 sm:py-4 rounded-full bg-indigo-600 text-white font-semibold text-sm sm:text-base hover:bg-indigo-700 transition-all shadow-md hover:shadow-xl hover:shadow-indigo-600/20"
+                            >
+                                <span>View My Work</span>
+                                <HiArrowRight className="w-4 h-4 sm:w-5 sm:h-5 transition-transform group-hover:translate-x-1" />
+                            </button>
+
+                            <button
+                                onClick={() => generateResumePDF()}
+                                className="inline-flex items-center gap-2 px-5 py-3 sm:px-7 sm:py-4 rounded-full bg-white border border-gray-200 text-gray-900 font-semibold text-sm sm:text-base hover:bg-gray-50 transition-colors shadow-sm"
+                            >
+                                <HiDownload className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500" />
+                                <span>Download Resume</span>
+                            </button>
+                        </div>
+
+                        {/* Social Links */}
+                        <div className="flex justify-start items-center gap-3 mt-3">
+                            {[
+                                { href: `https://github.com/${config.social.github}`, icon: <FaGithub className="w-5 h-5" />, label: 'GitHub' },
+                                { href: `https://www.linkedin.com/in/${config.social.linkedin}`, icon: <FaLinkedinIn className="w-5 h-5" />, label: 'LinkedIn' },
+                            ].map((social) => (
+                                <a
+                                    key={social.label}
+                                    href={social.href}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    aria-label={social.label}
+                                    className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-600 hover:text-indigo-600 hover:border-indigo-200 hover:bg-indigo-50 transition-all shadow-sm"
+                                >
+                                    {social.icon}
+                                </a>
+                            ))}
+                        </div>
                     </motion.div>
 
-                    <motion.h1
-                        variants={itemAnimation}
-                        className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold tracking-tight leading-tight"
-                    >
-                        <span className="block text-white mb-2">
-                            Hi, I'm {config.developer.name}
-                        </span>
-                        <span className="block text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl bg-gradient-to-r from-white/60 via-white to-white/60 bg-clip-text text-transparent">
-                          "I build technology shaped by intelligence."
-                        </span>
-                    </motion.h1>
-
-                    <motion.p
-                        variants={itemAnimation}
-                        className="text-sm sm:text-base md:text-lg lg:text-xl text-white/60 leading-relaxed max-w-2xl"
-                    >
-                         I'm Shaik Haries Hussain — an AIML student and an early-stage developer exploring software, AI, and emerging technologies.
-I enjoy building real projects, experimenting with new tools, and turning ideas into working digital experiences.
-                    </motion.p>
-
+                    {/* Right Content — Desktop only, full photo with rounded corners */}
                     <motion.div
-                        variants={itemAnimation}
-                        className="flex flex-wrap gap-3 sm:gap-4 pt-2 sm:pt-4"
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.7, delay: 0.2 }}
+                        className="w-full hidden lg:flex justify-center"
                     >
-                        <motion.button
-                            onClick={scrollToProjects}
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            className="group inline-flex items-center gap-2 px-6 py-3 sm:px-8 sm:py-4 rounded-full bg-white text-black font-semibold text-sm sm:text-base hover:bg-white/90 transition-all duration-300 shadow-lg shadow-white/20 w-full sm:w-auto justify-center"
-                        >
-                            <span>View Projects</span>
-                            <HiArrowRight className="w-4 h-4 sm:w-5 sm:h-5 transition-transform duration-300 group-hover:translate-x-1" />
-                        </motion.button>
+                        <img
+                            src="/hero-profile.png"
+                            alt="Haries Hussain"
+                            className="w-full max-w-[500px] rounded-[2rem] border border-indigo-100 shadow-xl"
+                        />
                     </motion.div>
-                </motion.div>
 
-                {/* Floating elements */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 1.2, duration: 0.8 }}
-                    className="absolute -z-10 inset-0 pointer-events-none"
-                >
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] sm:w-[600px] sm:h-[600px] bg-white/5 rounded-full blur-3xl" />
-                </motion.div>
-            </div>
-            
-            {/* Black Hole SVG */}
-            <div className="w-full relative z-10">
-                <BlackHole />
+                </div>
             </div>
         </section>
     );
 };
 
-export default Hero;   
+export default Hero;

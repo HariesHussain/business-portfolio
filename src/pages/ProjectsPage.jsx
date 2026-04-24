@@ -1,34 +1,9 @@
 import React, { useState, useMemo } from 'react';
-import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
-import { FaGithub, FaStar, FaCodeBranch, FaSpinner } from 'react-icons/fa';
-import { HiArrowRight, HiCode, HiExternalLink } from 'react-icons/hi';
+import { FaGithub, FaStar, FaCodeBranch } from 'react-icons/fa';
+import { HiArrowRight, HiExternalLink } from 'react-icons/hi';
 import useSWR from 'swr';
 import { config } from '../config.jsx';
-
-const containerAnimation = {
-    hidden: { opacity: 0 },
-    show: {
-        opacity: 1,
-        transition: {
-            duration: 0.6,
-            staggerChildren: 0.1,
-            delayChildren: 0.2
-        }
-    }
-};
-
-const titleAnimation = {
-    hidden: { opacity: 0, y: 20 },
-    show: {
-        opacity: 1,
-        y: 0,
-        transition: {
-            duration: 0.6,
-            ease: [0.23, 1, 0.32, 1]
-        }
-    }
-};
+import SEO from '../components/SEO';
 
 const languageColors = {
     JavaScript: '#f1e05a',
@@ -49,268 +24,179 @@ const languageColors = {
 const ITEMS_PER_PAGE = 12;
 const GITHUB_API_URL = `https://api.github.com/users/${config.social.github}/repos`;
 
-const getProjectSize = (index) => {
-    const sizes = [
-        "col-span-2 sm:col-span-1 md:col-span-2 row-span-1",
-        "col-span-1 sm:row-span-2 row-span-1",
-        "col-span-1 row-span-1",
-        "col-span-1 row-span-1",
-        "col-span-1 row-span-1",
-        "col-span-1 row-span-1",
-    ];
-    return sizes[index % sizes.length];
-};
-
 const fetcher = async (url) => {
     const res = await fetch(url);
-    if (!res.ok) {
-        throw new Error('Failed to fetch GitHub projects');
-    }
+    if (!res.ok) throw new Error('Failed to fetch GitHub projects');
     return res.json();
 };
 
-const ProjectCard = ({ project, size }) => {
+const ProjectCard = ({ project }) => {
     const topics = project.topics || [];
 
     return (
-        <motion.a
+        <a
             href={project.html_url}
             target="_blank"
             rel="noopener noreferrer"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.4 }}
-            className={`relative group ${size}`}
+            className="group block"
         >
-            <div className="bg-white/5 border border-white/10 p-4 md:p-5 rounded-xl sm:rounded-2xl backdrop-blur-sm cursor-pointer relative overflow-hidden h-full w-full min-h-[140px] flex flex-col shadow-lg hover:border-white/30 hover:bg-white/10 transition-all duration-300">
-                {/* Shine effect */}
-                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent" style={{
-                        animation: 'shimmer 3s infinite',
-                        backgroundSize: '200% 100%'
-                    }} />
+            <div className="bg-white border border-gray-200 p-6 rounded-2xl h-full flex flex-col hover:shadow-lg hover:border-indigo-200 transition-all duration-300">
+                <div className="flex items-start justify-between gap-2 mb-3">
+                    <div className="flex items-center space-x-2.5 flex-1 min-w-0">
+                        <FaGithub className="w-5 h-5 text-gray-400 group-hover:text-indigo-600 transition-colors flex-shrink-0" />
+                        <h3 className="font-bold text-gray-900 text-base truncate group-hover:text-indigo-600 transition-colors">
+                            {project.name}
+                        </h3>
+                    </div>
+                    <HiExternalLink className="w-5 h-5 text-gray-300 group-hover:text-indigo-500 transition-colors flex-shrink-0" />
                 </div>
 
-                <div className="relative flex flex-col gap-3 w-full z-10 h-full justify-between">
-                    <div className="flex flex-col gap-3">
-                        <div className="flex items-start justify-between gap-2">
-                            <div className="flex items-center space-x-2 flex-1 min-w-0">
-                                <FaGithub className="w-4 h-4 text-white shrink-0" />
-                                <h3 className="font-bold text-white text-sm truncate">
-                                    {project.name}
-                                </h3>
-                            </div>
-                            <HiExternalLink className="w-4 h-4 text-white/60 group-hover:text-white transition-colors shrink-0" />
-                        </div>
+                <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed flex-1 mb-4">
+                    {project.description || "No description provided"}
+                </p>
 
-                        <p className="text-xs text-white/70 line-clamp-3 leading-relaxed">
-                            {project.description || "No description provided"}
-                        </p>
-                    </div>
-
-                    <div className="flex flex-col gap-2 mt-auto">
-                        {topics.length > 0 && (
-                            <div className="flex flex-wrap gap-1.5">
-                                {topics.slice(0, size.includes('row-span-2') ? 3 : 2).map((topic) => (
-                                    <span
-                                        key={topic}
-                                        className="text-[10px] bg-white/10 text-white px-2 py-0.5 rounded-full border border-white/10"
-                                    >
-                                        {topic}
-                                    </span>
-                                ))}
-                                {topics.length > (size.includes('row-span-2') ? 3 : 2) && (
-                                    <span className="text-[10px] text-white/50">
-                                        +{topics.length - (size.includes('row-span-2') ? 3 : 2)}
-                                    </span>
-                                )}
-                            </div>
+                {topics.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mb-4">
+                        {topics.slice(0, 3).map((topic) => (
+                            <span key={topic} className="text-[11px] font-medium bg-gray-100 text-gray-600 border border-gray-200 px-2.5 py-1 rounded-full">
+                                {topic}
+                            </span>
+                        ))}
+                        {topics.length > 3 && (
+                            <span className="text-[11px] text-gray-400 font-medium self-center">+{topics.length - 3}</span>
                         )}
+                    </div>
+                )}
 
-                        <div className="flex items-center space-x-3 flex-wrap">
-                            {project.language && (
-                                <div className="flex items-center space-x-1">
-                                    <div
-                                        className="w-2.5 h-2.5 rounded-full"
-                                        style={{
-                                            backgroundColor: languageColors[project.language] || '#ccc'
-                                        }}
-                                    />
-                                    <span className="text-xs text-white/70">
-                                        {project.language}
-                                    </span>
-                                </div>
-                            )}
-                            <div className="flex items-center space-x-1">
-                                <FaStar className="w-3 h-3 text-white/70" />
-                                <span className="text-xs text-white/70">
-                                    {project.stargazers_count}
-                                </span>
-                            </div>
-                            <div className="flex items-center space-x-1">
-                                <FaCodeBranch className="w-3 h-3 text-white/70" />
-                                <span className="text-xs text-white/70">
-                                    {project.forks_count}
-                                </span>
-                            </div>
+                <div className="flex items-center space-x-4 pt-3 border-t border-gray-100">
+                    {project.language && (
+                        <div className="flex items-center space-x-1.5">
+                            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: languageColors[project.language] || '#888' }} />
+                            <span className="text-xs font-medium text-gray-500">{project.language}</span>
                         </div>
+                    )}
+                    <div className="flex items-center space-x-1">
+                        <FaStar className="w-3.5 h-3.5 text-gray-400" />
+                        <span className="text-xs font-medium text-gray-500">{project.stargazers_count}</span>
+                    </div>
+                    <div className="flex items-center space-x-1">
+                        <FaCodeBranch className="w-3.5 h-3.5 text-gray-400" />
+                        <span className="text-xs font-medium text-gray-500">{project.forks_count}</span>
                     </div>
                 </div>
             </div>
-        </motion.a>
+        </a>
     );
 };
 
 const ProjectsPage = () => {
     const [page, setPage] = useState(1);
-    const [isLoadingMore, setIsLoadingMore] = useState(false);
 
-    const { data, error, isLoading, mutate: revalidateData } = useSWR(
+    const { data, error, isLoading } = useSWR(
         `${GITHUB_API_URL}?sort=updated&per_page=${ITEMS_PER_PAGE * page}`,
         fetcher,
-        {
-            revalidateOnFocus: false,
-            refreshInterval: 300000,
-            shouldRetryOnError: false,
-        }
+        { revalidateOnFocus: false, refreshInterval: 300000, shouldRetryOnError: false }
     );
 
     const projects = useMemo(() => {
         if (!data) return [];
-        const filtered = data
-            .filter(project => 
-                !project.fork && 
-                !project.private
-            )
+        return data
+            .filter(p => !p.fork && !p.private)
             .sort((a, b) => b.stargazers_count - a.stargazers_count)
             .slice(0, ITEMS_PER_PAGE * page);
-        
-        return filtered.map((project, index) => ({
-            ...project,
-            size: getProjectSize(index)
-        }));
     }, [data, page]);
 
-    const loadMore = () => {
-        setPage(prev => prev + 1);
-    };
-
     return (
-        <section className="py-16 md:py-24 relative min-h-screen">
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                <motion.div
-                    variants={containerAnimation}
-                    initial="hidden"
-                    animate="show"
-                    className="space-y-12 md:space-y-16"
-                >
-                    {/* Section Title */}
-                    <motion.div
-                        variants={titleAnimation}
-                        className="mb-12 md:mb-16 space-y-6"
-                    >
+        <>
+        <SEO
+            title="Projects | Haries Hussain — Web Developer in Mulanpeta, Nandyal"
+            description="Explore local web development projects by Haries Hussain, a top AIML student and frontend developer in Mulanpeta, Nandyal. Open source React, JavaScript, and Python applications."
+            keywords="Local web development projects Nandyal Mulanpeta, Mulanpeta street developer, Web projects Nandyal, Haries Hussain projects"
+            path="/projects"
+            schemaType="CollectionPage"
+        />
+        <section className="pt-28 pb-12 md:pt-40 md:pb-24 bg-gray-50">
+            <div className="w-full px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
+                <div className="space-y-12">
+                    {/* Header */}
+                    <div className="mb-12 space-y-6">
                         <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
                             <div className="space-y-4 max-w-2xl">
-                                <div className="inline-flex items-center space-x-2 bg-white/5 border border-white/10 px-4 py-2 rounded-full backdrop-blur-sm mb-4">
-                                    <FaGithub className="w-4 h-4 sm:w-5 sm:h-5 text-white/80" />
-                                    <span className="text-xs sm:text-sm font-semibold text-white/80">GitHub Projects</span>
+                                <div className="inline-flex items-center space-x-2 bg-indigo-50 text-indigo-700 px-4 py-2 rounded-full mb-4">
+                                    <FaGithub className="w-4 h-4" />
+                                    <span className="text-sm font-semibold">GitHub Projects</span>
                                 </div>
-                                <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white tracking-tight">
+                                <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 tracking-tight display-font">
                                     Open Source Projects
-                                </h2>
-                                <p className="text-sm sm:text-base md:text-lg text-white/60 leading-relaxed">
-                                    A collection of my public repositories on GitHub,
-                                    showcasing projects in{' '}
-                                    <span className="text-white font-semibold">full-stack development</span>,{' '}
-                                    <span className="text-white font-semibold">web technologies</span>, and{' '}
-                                    <span className="text-white font-semibold">open source contributions</span>.
+                                </h1>
+                                <p className="text-base md:text-lg text-gray-600 leading-relaxed">
+                                    A collection of my public repositories, showcasing projects in{' '}
+                                    <span className="text-gray-900 font-semibold">full-stack development</span>,{' '}
+                                    <span className="text-gray-900 font-semibold">web technologies</span>, and{' '}
+                                    <span className="text-gray-900 font-semibold">open source contributions</span>.
                                 </p>
                             </div>
 
-                            <motion.a
+                            <a
                                 href={`https://github.com/${config.social.github}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                whileHover={{ scale: 1.05 }}
-                                whileTap={{ scale: 0.95 }}
-                                className="inline-flex items-center gap-2 px-6 py-3 sm:px-8 sm:py-4 rounded-full bg-white text-black font-semibold text-sm sm:text-base hover:bg-white/90 transition-all duration-300 shadow-lg shadow-white/20 w-full md:w-auto justify-center"
+                                className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-indigo-600 text-white font-semibold text-sm hover:bg-indigo-700 transition-colors w-full md:w-auto justify-center"
                             >
                                 View GitHub
-                                <HiArrowRight className="w-4 h-4 sm:w-5 sm:h-5 transition-transform duration-300 group-hover:translate-x-1" />
-                            </motion.a>
+                                <HiArrowRight className="w-5 h-5" />
+                            </a>
                         </div>
 
                         {/* Stats */}
-                        <div className="flex items-center gap-6 pt-2 overflow-x-auto pb-2">
-                            <div className="space-y-1 shrink-0">
-                                <span className="text-2xl sm:text-3xl font-bold text-white">{projects.length}+</span>
-                                <p className="text-xs sm:text-sm text-white/60 whitespace-nowrap">
-                                    Public Repositories
-                                </p>
+                        <div className="flex items-center gap-6 pt-2">
+                            <div>
+                                <span className="text-2xl sm:text-3xl font-bold text-gray-900">{projects.length}+</span>
+                                <p className="text-sm text-gray-500">Public Repos</p>
                             </div>
-                            <div className="w-px h-8 sm:h-10 bg-white/10 shrink-0" />
-                            <div className="space-y-1 shrink-0">
-                                <span className="text-2xl sm:text-3xl font-bold text-white">-</span>
-                                <p className="text-xs sm:text-sm text-white/60 whitespace-nowrap">
-                                    Actively Learning
-                                </p>
+                            <div className="w-px h-10 bg-gray-200" />
+                            <div>
+                                <span className="text-2xl sm:text-3xl font-bold text-indigo-600">—</span>
+                                <p className="text-sm text-gray-500">Actively Learning</p>
                             </div>
                         </div>
 
-                        <div className="h-px w-full bg-gradient-to-r from-transparent via-white/20 to-transparent" />
-                    </motion.div>
+                        <div className="h-px w-full bg-gray-200" />
+                    </div>
 
                     {/* Projects Grid */}
-                    <motion.div
-                        variants={containerAnimation}
-                        className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 auto-rows-fr gap-4 w-full max-w-6xl mx-auto"
-                    >
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
                         {isLoading ? (
-                            Array(ITEMS_PER_PAGE).fill(0).map((_, index) => (
-                                <div key={index} className={getProjectSize(index)}>
-                                    <div className="bg-white/5 border border-white/10 p-5 rounded-2xl min-h-[140px] animate-pulse" />
-                                </div>
+                            Array(ITEMS_PER_PAGE).fill(0).map((_, i) => (
+                                <div key={i} className="bg-white border border-gray-200 p-6 rounded-2xl min-h-[200px] animate-pulse" />
                             ))
                         ) : error ? (
-                            <div className="col-span-full text-center text-white/60">
+                            <div className="col-span-full text-center text-gray-500 py-12">
                                 Failed to load projects. Please try again later.
                             </div>
                         ) : (
                             projects.map((project) => (
-                                <ProjectCard key={project.id} project={project} size={project.size} />
+                                <ProjectCard key={project.id} project={project} />
                             ))
                         )}
-                    </motion.div>
-
-                    {/* Load More Button */}
-                    <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mt-8">
-                        {!error && data?.length > projects.length && (
-                            <motion.button
-                                onClick={loadMore}
-                                disabled={isLoadingMore}
-                                whileHover={{ scale: 1.05 }}
-                                whileTap={{ scale: 0.95 }}
-                                className="px-6 py-3 rounded-full bg-white/10 border border-white/20 text-white text-sm font-medium hover:bg-white/20 transition-all duration-300"
-                            >
-                                {isLoadingMore ? (
-                                    <>
-                                        <FaSpinner className="w-4 h-4 mr-2 animate-spin inline" />
-                                        Loading...
-                                    </>
-                                ) : (
-                                    'Load More Projects'
-                                )}
-                            </motion.button>
-                        )}
                     </div>
-                </motion.div>
+
+                    {/* Load More */}
+                    {!error && data?.length > projects.length && (
+                        <div className="flex justify-center mt-8">
+                            <button
+                                onClick={() => setPage(p => p + 1)}
+                                className="px-8 py-3.5 rounded-full bg-white border border-gray-200 text-gray-700 font-semibold text-sm hover:bg-gray-50 transition-colors"
+                            >
+                                Load More Projects
+                            </button>
+                        </div>
+                    )}
+                </div>
             </div>
         </section>
+        </>
     );
 };
 
 export default ProjectsPage;
-
-
-
