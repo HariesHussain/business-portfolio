@@ -12,6 +12,13 @@ const ScrollToTop = () => {
   const { pathname } = useLocation();
   useEffect(() => {
     window.scrollTo(0, 0);
+
+    // Track page views in React (SPA)
+    if (typeof window.gtag === 'function') {
+      window.gtag('config', 'G-T6EKZE7V94', {
+        page_path: pathname,
+      });
+    }
   }, [pathname]);
   return null;
 };
