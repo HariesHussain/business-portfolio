@@ -109,8 +109,8 @@ const ProjectsPage = () => {
     return (
         <>
         <SEO
-            title="Projects | Haries Hussain — Web Developer in Mulanpeta, Nandyal"
-            description="Explore local web development projects by Haries Hussain, a top AIML student and frontend developer in Mulanpeta, Nandyal. Open source React, JavaScript, and Python applications."
+            title="Projects | Haries Hussain — Web Developer Nandyal"
+            description="Explore web development projects by Haries Hussain, an AIML student & frontend developer in Nandyal. Open source React, JS, and Python applications."
             keywords="Local web development projects Nandyal Mulanpeta, Mulanpeta street developer, Web projects Nandyal, Haries Hussain projects"
             path="/projects"
             schemaType="CollectionPage"

@@ -8,8 +8,8 @@ const Certificates = () => {
     return (
         <>
         <SEO
-            title="Certifications | Haries Hussain — Certified AI Developer in Mulanpeta, Nandyal"
-            description="View Haries Hussain's professional certifications in Web Development, Machine Learning, and Generative AI. Local developer based in Mulanpeta, Nandyal, AP."
+            title="Certifications | Haries Hussain — AI Developer Nandyal"
+            description="View Haries Hussain's professional certifications in Web Development, Machine Learning, and Generative AI. Local developer based in Nandyal."
             keywords="Certified AI developer Nandyal, Mulanpeta local IT credentials, Haries Hussain certificates, AIML Mulanpeta"
             path="/certificates"
             schemaType="CollectionPage"

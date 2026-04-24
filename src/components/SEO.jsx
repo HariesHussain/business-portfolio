@@ -7,7 +7,7 @@ const DEFAULT_IMAGE = `${SITE_URL}/og-image.png`;
 
 const SEO = ({
     title = 'Haries Hussain | Web Developer & AIML Expert in Nandyal',
-    description = "Looking for a talented Web Developer or AI/ML intern in Mulanpeta, Nandyal? Haries Hussain is a top AIML engineering student specializing in React, JavaScript, and Machine Learning.",
+    description = "Hire Haries Hussain, a talented Web Developer & AI/ML student in Nandyal. Specializing in React, JS, and Machine Learning projects.",
     path = '/',
     image = DEFAULT_IMAGE,
     type = 'website',
