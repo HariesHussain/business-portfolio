@@ -49,7 +49,7 @@ npm install
 npm run dev
 ```
 
-Open [http://localhost:5173](http://localhost:5173) to view it in your browser.
+Open [http://localhost:5173](http://harieshussain.tech) to view it in your browser.
 
 ## Available Scripts
 
@@ -129,8 +129,8 @@ MIT License - Use freely for personal or commercial projects.
 
 ## Contact
 
-- **GitHub:** [yourusername](https://github.com/yourusername)
-- **Email:** your.email@example.com
+- **GitHub:** [yourusername](https://github.com/HariesHussain)
+- **Email:** shaikharieshussain09.com
 
 ---
 
