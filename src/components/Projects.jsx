@@ -63,18 +63,8 @@ const ProjectCard = ({ project }) => {
 };
 
 const Projects = () => {
-    const { data, error, isLoading } = useSWR(
-        `${GITHUB_API_URL}?sort=updated&per_page=10`,
-        fetcher,
-        { revalidateOnFocus: false, refreshInterval: 300000, shouldRetryOnError: false }
-    );
-
-    const projects = useMemo(() => {
-        if (!data) return [];
-        return data.filter(p => !p.fork && !p.private)
-            .sort((a, b) => b.stargazers_count - a.stargazers_count)
-            .slice(0, ITEMS_PER_PAGE);
-    }, [data]);
+    // Use featured projects from config instead of fetching all repos
+    const projects = config.featuredProjects || [];
 
     return (
         <section id="projects" className="py-12 md:py-20 bg-gray-50">
@@ -95,15 +85,7 @@ const Projects = () => {
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
-                    {isLoading ? (
-                        Array(ITEMS_PER_PAGE).fill(0).map((_, i) => (
-                            <div key={i} className="bg-white border border-gray-200 p-5 rounded-xl min-h-[160px] animate-pulse" />
-                        ))
-                    ) : error ? (
-                        <div className="col-span-full text-center text-gray-500 py-12">Failed to load projects.</div>
-                    ) : (
-                        projects.map((project) => <ProjectCard key={project.id} project={project} />)
-                    )}
+                    {projects.map((project) => <ProjectCard key={project.name} project={project} />)}
                 </div>
 
                 <div className="flex justify-center mt-8">

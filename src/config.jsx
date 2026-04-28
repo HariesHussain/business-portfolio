@@ -66,6 +66,35 @@ export const config = {
             ]
         }
     ],
+    featuredProjects: [
+        {
+            name: "student-portfolio",
+            description: "Modern Portfolio Website | React + Vite + Tailwind CSS",
+            html_url: "https://github.com/HariesHussain/student-portfolio",
+            language: "JavaScript",
+            stargazers_count: 1,
+            forks_count: 0,
+            topics: ["react", "portfolio", "vite", "tailwind"]
+        },
+        {
+            name: "habit-tracker",
+            description: "Track daily habits with beautiful UI | React + TailwindCSS + Local Storage",
+            html_url: "https://github.com/HariesHussain/habit-tracker",
+            language: "JavaScript",
+            stargazers_count: 0,
+            forks_count: 0,
+            topics: ["react", "habit-tracker", "productivity", "tailwind"]
+        },
+        {
+            name: "FitGenie",
+            description: "FitGenie is a React + Vite AI fitness coach app with Firebase auth, workout/nutrition tracking, and a secure purchase system.",
+            html_url: "https://github.com/HariesHussain/FitGenie",
+            language: "TypeScript",
+            stargazers_count: 0,
+            forks_count: 0,
+            topics: ["react", "fitness", "ai", "firebase"]
+        }
+    ],
     experiences: [
         {
             position: "Web Developer",
